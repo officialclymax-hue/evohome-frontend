@@ -1,44 +1,58 @@
 // src/lib/api.ts
+// Central API helpers to talk to your FastAPI backend
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://evohome-backend-docker.onrender.com";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  "https://evohome-backend-docker.onrender.com";
 
-// ---- Lead form submission ----
-export async function sendLead(data: any) {
-  const res = await fetch(`${API_BASE}/leads`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+// Simple helper to GET or POST
+async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers || {}),
+    },
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to send lead: ${res.status}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(`${res.status} ${res.statusText} — ${text}`);
   }
-  return res.json();
+  return res.json() as Promise<T>;
 }
 
-// ---- Services ----
-export async function getServices() {
-  const res = await fetch(`${API_BASE}/content/services`);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch services: ${res.status}`);
-  }
-  return res.json();
-}
+// -------- CONTENT (single pages like homepage, footer etc.) --------
+export const getContent = (key: string) =>
+  http(`/content/${encodeURIComponent(key)}`);
 
-// ---- Blogs ----
-export async function getBlogs() {
-  const res = await fetch(`${API_BASE}/content/blogs`);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch blogs: ${res.status}`);
-  }
-  return res.json();
-}
+export const getHomepage = () => getContent("homepage");
+export const getAbout = () => getContent("about");
+export const getFooter = () => getContent("footer");
+export const getHeader = () => getContent("header");
+export const getSEO = () => getContent("seo");
+export const getCoverage = () => getContent("coverage");
+export const getContact = () => getContent("contact");
+export const getForms = () => getContent("forms");
+export const getRequestQuote = () => getContent("request-quote");
+export const getChatbot = () => getContent("chatbot");
+export const getFloatingButtons = () => getContent("floating-buttons");
 
-// ---- Gallery ----
-export async function getGallery() {
-  const res = await fetch(`${API_BASE}/content/gallery`);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch gallery: ${res.status}`);
-  }
-  return res.json();
+// -------- COLLECTIONS (lists) --------
+export const getServices = () => getContent("services");
+export const getBlogs = () => getContent("blogs");
+export const getGallery = () => getContent("gallery");
+
+// -------- LEADS (form submission) --------
+export async function submitLead(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  message?: string;
+  service?: string;
+}) {
+  return http(`/lead`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
