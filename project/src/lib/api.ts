@@ -1,22 +1,44 @@
-export const API_BASE =
-  import.meta.env.VITE_API_BASE || "https://evohome-backend-docker.onrender.com";
+// src/lib/api.ts
 
-export type LeadPayload = {
-  name: string;
-  email: string;
-  phone?: string;
-  message?: string;
-};
+const API_BASE = import.meta.env.VITE_API_BASE || "https://evohome-backend-docker.onrender.com";
 
-export async function sendLead(payload: LeadPayload) {
-  const res = await fetch(`${API_BASE}/lead`, {
+// ---- Lead form submission ----
+export async function sendLead(data: any) {
+  const res = await fetch(`${API_BASE}/leads`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
+
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} ${text}`);
+    throw new Error(`Failed to send lead: ${res.status}`);
   }
-  return res.json().catch(() => ({}));
+  return res.json();
+}
+
+// ---- Services ----
+export async function getServices() {
+  const res = await fetch(`${API_BASE}/content/services`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch services: ${res.status}`);
+  }
+  return res.json();
+}
+
+// ---- Blogs ----
+export async function getBlogs() {
+  const res = await fetch(`${API_BASE}/content/blogs`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch blogs: ${res.status}`);
+  }
+  return res.json();
+}
+
+// ---- Gallery ----
+export async function getGallery() {
+  const res = await fetch(`${API_BASE}/content/gallery`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch gallery: ${res.status}`);
+  }
+  return res.json();
 }
