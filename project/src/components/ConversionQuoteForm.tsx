@@ -1,68 +1,108 @@
+// src/components/ConversionQuoteForm.tsx
 import React, { useState } from "react";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "https://evohome-backend-docker.onrender.com";
+import { submitLead } from "../lib/api";
 
 export default function ConversionQuoteForm() {
-  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "err">("idle");
-  const [errMsg, setErrMsg] = useState<string>("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrMsg("");
-    const f = new FormData(e.currentTarget);
+    setLoading(true);
+    setStatus(null);
 
-    const payload = {
-      name: String(f.get("name") || ""),
-      email: String(f.get("email") || ""),
-      phone: String(f.get("phone") || ""),
-      message: String(f.get("message") || ""),
-    };
-
-    setStatus("sending");
     try {
-      const res = await fetch(`${API_BASE}/lead`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        // show WHY (422 validation, 401 CORS, 500 etc.)
-        const text = await res.text().catch(() => "");
-        setErrMsg(`Error ${res.status}: ${text || "Request failed"}`);
-        setStatus("err");
-        return;
-        }
-
-      // ok
-      setStatus("ok");
-      e.currentTarget.reset();
+      await submitLead(form);
+      setStatus("Thanks! Your request has been sent.");
+      setForm({ name: "", email: "", phone: "", message: "" });
     } catch (err: any) {
-      setErrMsg(err?.message || "Network error");
-      setStatus("err");
+      console.error(err);
+      setStatus("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={onSubmit} id="quote-form" className="space-y-4">
-      {/* Keep these names exactly: name, email, phone, message */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <input name="name" placeholder="Your name" required className="border rounded px-3 py-2" />
-        <input name="email" type="email" placeholder="Email" required className="border rounded px-3 py-2" />
-        <input name="phone" placeholder="Phone" className="border rounded px-3 py-2 sm:col-span-2" />
-        <textarea name="message" placeholder="Tell us about your project" rows={4} className="border rounded px-3 py-2 sm:col-span-2" />
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-lg shadow-md p-6 space-y-4"
+    >
+      <h2 className="text-xl font-semibold text-gray-800">
+        Request a Free Quote
+      </h2>
+
+      <div>
+        <label className="block text-sm font-medium">Name</label>
+        <input
+          type="text"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+          className="mt-1 w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="mt-1 w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Phone</label>
+        <input
+          type="tel"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          className="mt-1 w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Message</label>
+        <textarea
+          name="message"
+          rows={3}
+          value={form.message}
+          onChange={handleChange}
+          className="mt-1 w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200"
+        />
       </div>
 
       <button
         type="submit"
-        disabled={status === "sending"}
-        className="bg-teal-600 text-white px-5 py-3 rounded-lg hover:bg-teal-700 disabled:opacity-60"
+        disabled={loading}
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
-        {status === "sending" ? "Sending…" : "Request Free Quote"}
+        {loading ? "Submitting..." : "Submit"}
       </button>
 
-      {status === "ok" && <p className="text-green-600">Thanks! We’ll be in touch shortly.</p>}
-      {status === "err" && <p className="text-red-600">Something went wrong. {errMsg}</p>}
+      {status && (
+        <p className="text-center text-sm mt-2">
+          {status}
+        </p>
+      )}
     </form>
   );
 }
