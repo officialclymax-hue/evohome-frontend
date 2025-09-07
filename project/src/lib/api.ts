@@ -1,6 +1,6 @@
 import { services } from '../data/services';
 import { counties } from '../data/counties';
-import { galleryImages } from '../data/gallery'; // Import galleryImages
+import { galleryImages } from '../data/gallery';
 
 // Simulate fetching services from an API
 export const fetchServices = async () => {
