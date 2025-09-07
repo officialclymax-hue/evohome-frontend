@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { X, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { useGallery, GalleryItem } from '../data/gallery'; // Import useGallery and GalleryItem
+import { useGallery, GalleryItem } from '../data/gallery';
 
 const GalleryPage = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const { galleryImages, loading, error } = useGallery(); // Use the hook to fetch gallery images
+  const { galleryImages, loading, error } = useGallery();
 
   const categories = ['All', ...Array.from(new Set(galleryImages.map(img => img.category)))];
   const [activeCategory, setActiveCategory] = useState('All');
