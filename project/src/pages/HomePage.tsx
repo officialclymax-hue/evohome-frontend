@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import PremiumHero from '../components/PremiumHero';
 import MultiStepQuoteForm from '../components/MultiStepQuoteForm';
-import { useServices, getFeaturedServices } from '../data/services'; // Import useServices and getFeaturedServices
-import { useCounties } from '../data/counties'; // Import useCounties
+import { useServices } from '../data/services';
 import {
   Shield,
   Users,
@@ -36,52 +35,7 @@ import {
 } from 'lucide-react';
 
 const HomePage = () => {
-  // Fetch services and counties using the new hooks
-  const { services, loading: servicesLoading, error: servicesError } = useServices();
-  const { counties, loading: countiesLoading, error: countiesError } = useCounties();
-
-  // Get featured services from the fetched data
-  const featuredServices = servicesLoading || servicesError ? [] : getFeaturedServices(services);
-
-  // Hardcoded testimonials (these are not dynamic from backend yet)
-  const realTestimonials = [
-    {
-      name: 'Dean Butler',
-      date: '2025-04-09',
-      rating: 5,
-      text: 'Excellent service very professional. So impressed I recommend EvoHome to my cousin, he was happy with the job they done. Great communication throughout the process.',
-      service: 'Solar Installation',
-      verified: true,
-      location: 'Hampshire'
-    },
-    {
-      name: 'Michelle Comrie (MJ)',
-      date: '2025-01-16',
-      rating: 5,
-      text: 'I was unfortunate to have a wall vent incorrectly fitted causing a leak. EvoHome sorted it quickly and professionally with no fuss. Excellent customer service.',
-      service: 'Roofing Repair',
-      verified: true,
-      location: 'Surrey'
-    },
-    {
-      name: 'Jamie Walsh',
-      date: '2024-10-08',
-      rating: 5,
-      text: 'I\'m a retrofit assessor and recommend EvoHome Improvements highly. This type of service is much needed in the UK home improvement industry.',
-      service: 'Heat Pump Assessment',
-      verified: true,
-      location: 'Sussex'
-    },
-    {
-      name: 'Tyler Heath',
-      date: '2024-10-03',
-      rating: 5,
-      text: 'This is excellent, all I have to do is focus on the standard of work, all of the marketing, sales, customer service and payments EvoHome handles.',
-      service: 'Trade Partner',
-      verified: true,
-      location: 'Dorset'
-    }
-  ];
+  const { services, loading, error } = useServices();
 
   const whyChooseEvoHome = [
     {
@@ -121,6 +75,60 @@ const HomePage = () => {
       highlight: 'Quality guaranteed'
     }
   ];
+
+  const realTestimonials = [
+    {
+      name: 'Dean Butler',
+      date: '2025-04-09',
+      rating: 5,
+      text: 'Excellent service very professional. So impressed I recommend EvoHome to my cousin, he was happy with the job they done. Great communication throughout the process.',
+      service: 'Solar Installation',
+      verified: true,
+      location: 'Hampshire'
+    },
+    {
+      name: 'Michelle Comrie (MJ)',
+      date: '2025-01-16',
+      rating: 5,
+      text: 'I was unfortunate to have a wall vent incorrectly fitted causing a leak. EvoHome sorted it quickly and professionally with no fuss. Excellent customer service.',
+      service: 'Roofing Repair',
+      verified: true,
+      location: 'Surrey'
+    },
+    {
+      name: 'Jamie Walsh',
+      date: '2024-10-08',
+      rating: 5,
+      text: 'I\'m a retrofit assessor and recommend EvoHome Improvements highly. This type of service is much needed in the UK home improvement industry.',
+      service: 'Heat Pump Assessment',
+      verified: true,
+      location: 'Sussex'
+    },
+    {
+      name: 'Tyler Heath',
+      date: '2024-10-03',
+      rating: 5,
+      text: 'This is excellent, all I have to do is focus on the standard of work, all of the marketing, sales, customer service and payments EvoHome handles.',
+      service: 'Trade Partner',
+      verified: true,
+      location: 'Dorset'
+    }
+  ];
+
+  const homepageServiceSlugs = [
+    'solar-assisted-heat-pump',
+    'air-source-heat-pump',
+    'solar-power',
+    'windows-doors',
+    'driveways',
+    'insulation',
+    'roofing',
+    'kitchens',
+    'bathrooms'
+  ];
+
+  const homepageServices = services.filter(service => homepageServiceSlugs.includes(service.slug));
+
 
   const evoHomeServices = [
     {
@@ -201,8 +209,7 @@ const HomePage = () => {
     }
   ];
 
-  // Handle loading and error states for services and counties
-  if (servicesLoading || countiesLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
         <p className="text-xl text-gray-700">Loading homepage content...</p>
@@ -210,10 +217,10 @@ const HomePage = () => {
     );
   }
 
-  if (servicesError || countiesError) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
-        <p className="text-xl text-red-600">Error loading content: {servicesError || countiesError}</p>
+        <p className="text-xl text-red-600">Error: {error}</p>
       </div>
     );
   }
@@ -409,7 +416,7 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {featuredServices.map((service) => (
+            {homepageServices.map((service) => (
               <div key={service.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group">
                 <div className="relative overflow-hidden">
                   <img
