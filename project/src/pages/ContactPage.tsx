@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { services } from '../data/services'; // Directly import services array
 import { Helmet } from 'react-helmet-async';
-import { useServices } from '../data/services'; // Import the new hook
 import {
   Phone,
   Mail,
@@ -11,8 +11,6 @@ import {
 } from 'lucide-react';
 
 const ContactPage = () => {
-  const { services, loading, error } = useServices(); // Use the hook to get services
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -303,13 +301,9 @@ const ContactPage = () => {
                       value={formData.service}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2B4C9B] focus:border-transparent"
-                      disabled={loading} // Disable while loading services
                     >
-                      <option value="">
-                        {loading ? 'Loading services...' : 'Select a service (optional)'}
-                      </option>
-                      {error && <option value="" disabled>Error loading services</option>}
-                      {!loading && !error && services.map((service) => (
+                      <option value="">Select a service (optional)</option>
+                      {services.map((service) => (
                         <option key={service.id} value={service.name}>
                           {service.name}
                         </option>
