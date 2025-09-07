@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchServices } from '../lib/api'; // Import the new fetch function
+import { fetchServices } from '../lib/api';
 
 export interface Service {
   id: string;
@@ -60,7 +60,6 @@ export interface Service {
   }[];
 }
 
-// This is your local data, now acting as the "mock backend" source
 export const services: Service[] = [
   // Solar Assisted Water Heat Pump
   {
