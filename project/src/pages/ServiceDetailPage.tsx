@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useServices, getServiceBySlug } from '../data/services'; // Import useServices and getServiceBySlug
-import { useCounties, getPrimaryCounties } from '../data/counties'; // Import useCounties and getPrimaryCounties
+import { useServices, getServiceBySlug, Service } from '../data/services';
+import { useCounties, getPrimaryCounties, County } from '../data/counties';
 import { Helmet } from 'react-helmet-async';
 import ConversionQuoteForm from '../components/ConversionQuoteForm';
 import {
@@ -17,22 +17,17 @@ import {
   Star,
   ExternalLink,
   Wrench,
-  Home,
-  Zap
+  Home
 } from 'lucide-react';
 
 const ServiceDetailPage = () => {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
-
-  // Use the hooks to fetch all services and counties
   const { services, loading: servicesLoading, error: servicesError } = useServices();
   const { counties, loading: countiesLoading, error: countiesError } = useCounties();
 
-  // Find the specific service and primary counties from the fetched data
-  const service = servicesLoading || servicesError ? undefined : getServiceBySlug(services, serviceSlug || '');
-  const primaryCounties = countiesLoading || countiesError ? [] : getPrimaryCounties(counties);
+  const service: Service | undefined = serviceSlug ? getServiceBySlug(services, serviceSlug) : undefined;
+  const primaryCounties: County[] = getPrimaryCounties(counties);
 
-  // Handle loading states
   if (servicesLoading || countiesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
@@ -41,16 +36,14 @@ const ServiceDetailPage = () => {
     );
   }
 
-  // Handle error states
   if (servicesError || countiesError) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
-        <p className="text-xl text-red-600">Error loading data: {servicesError || countiesError}</p>
+        <p className="text-xl text-red-600">Error: {servicesError || countiesError}</p>
       </div>
     );
   }
 
-  // Handle service not found after loading
   if (!service) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
@@ -327,7 +320,7 @@ const ServiceDetailPage = () => {
 
       {/* Why Choose Section */}
       {service.whyChooseContent && (
-        <section className="py-20">
+        <section className="py-20 bg-[#f8fafc]">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold text-[#2B4C9B] mb-8">
               Why Choose a {service.name}?
