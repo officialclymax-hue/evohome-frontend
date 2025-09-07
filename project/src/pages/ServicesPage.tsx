@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useServices, getServicesByCategory } from '../data/services'; // Import the new hook and helper
+import { useServices, getServicesByCategory } from '../data/services';
 import { Helmet } from 'react-helmet-async';
 import {
   Sun,
@@ -13,37 +13,30 @@ import {
 } from 'lucide-react';
 
 const ServicesPage = () => {
-  const { services, loading, error } = useServices(); // Use the hook to get services
+  const { services, loading, error } = useServices();
 
   const categoryIcons = {
     renewable: Sun,
     improvements: Home,
     garden: Trees,
-    maintenance: Wrench,
-    health: Home // Assuming 'health' category uses a generic home icon if not specified
+    maintenance: Wrench
   };
 
   const categoryNames = {
     renewable: 'Renewable Energy Services',
     improvements: 'Home Improvement Services',
     garden: 'Garden & Outdoor Services',
-    maintenance: 'Property Maintenance Services',
-    health: 'Health & Safety Services' // Added for completeness if 'health' category exists
+    maintenance: 'Property Maintenance Services'
   };
 
   const categoryDescriptions = {
     renewable: 'Future-proof your home with clean energy solutions that save money and reduce your carbon footprint.',
     improvements: 'Transform your home with quality improvements that enhance comfort, efficiency, and value.',
     garden: 'Create beautiful outdoor spaces that extend your living area and boost property appeal.',
-    maintenance: 'Keep your property in perfect condition with reliable maintenance and repair services.',
-    health: 'Ensure your home is safe and compliant with essential health and safety services.' // Added for completeness
+    maintenance: 'Keep your property in perfect condition with reliable maintenance and repair services.'
   };
 
-  // Get unique categories from the fetched services
-  const uniqueCategories = Array.from(new Set(services.map(service => service.category)));
-  // Define the order of categories you want to display
-  const orderedCategories = ['renewable', 'improvements', 'garden', 'maintenance', 'health'].filter(cat => uniqueCategories.includes(cat as any));
-
+  const categories = ['renewable', 'improvements', 'garden', 'maintenance'] as const;
 
   if (loading) {
     return (
@@ -56,7 +49,7 @@ const ServicesPage = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
-        <p className="text-xl text-red-600">Error: {error}</p>
+        <p className="text-xl text-red-600">Error loading services: {error}</p>
       </div>
     );
   }
@@ -176,14 +169,9 @@ const ServicesPage = () => {
       {/* Services by Category */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {orderedCategories.map((category) => {
-            const categoryServices = getServicesByCategory(services, category); // Pass services to helper
+          {categories.map((category) => {
+            const categoryServices = getServicesByCategory(services, category);
             const IconComponent = categoryIcons[category];
-
-            // Only render category section if there are services in it
-            if (categoryServices.length === 0) {
-              return null;
-            }
 
             return (
               <div key={category} className="mb-20">
