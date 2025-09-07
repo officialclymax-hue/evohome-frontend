@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchCounties } from '../lib/api'; // Import the new fetch function
+import { fetchCounties } from '../lib/api';
 
 export interface County {
   name: string;
@@ -8,7 +8,6 @@ export interface County {
   isPrimary?: boolean;
 }
 
-// This is your local data, now acting as the "mock backend" source
 export const counties: County[] = [
   { name: 'Hampshire', slug: 'hampshire', description: 'Professional home improvements across Hampshire', isPrimary: true },
   { name: 'Surrey', slug: 'surrey', description: 'Trusted specialists serving Surrey', isPrimary: true },
