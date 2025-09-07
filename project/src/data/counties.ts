@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react';
+import { fetchCounties as apiFetchCounties } from '../api'; // Renamed to avoid conflict
+
+// This is the shape of a County item, it should match your backend's County model
 export interface County {
   name: string;
   slug: string;
@@ -5,27 +9,36 @@ export interface County {
   isPrimary?: boolean;
 }
 
-export const counties: County[] = [
-  { name: 'Hampshire', slug: 'hampshire', description: 'Professional home improvements across Hampshire', isPrimary: true },
-  { name: 'Surrey', slug: 'surrey', description: 'Trusted specialists serving Surrey', isPrimary: true },
-  { name: 'Sussex', slug: 'sussex', description: 'Quality home improvements in Sussex', isPrimary: true },
-  { name: 'Dorset', slug: 'dorset', description: 'Expert services throughout Dorset', isPrimary: true },
-  { name: 'Wiltshire', slug: 'wiltshire', description: 'Professional installations in Wiltshire', isPrimary: true },
-  
-  // Extended coverage
-  { name: 'Berkshire', slug: 'berkshire', description: 'Quality services in Berkshire' },
-  { name: 'Kent', slug: 'kent', description: 'Trusted professionals in Kent' },
-  { name: 'Essex', slug: 'essex', description: 'Expert installations across Essex' },
-  { name: 'Hertfordshire', slug: 'hertfordshire', description: 'Professional services in Hertfordshire' },
-  { name: 'Buckinghamshire', slug: 'buckinghamshire', description: 'Quality workmanship in Buckinghamshire' },
-  { name: 'Oxfordshire', slug: 'oxfordshire', description: 'Trusted specialists in Oxfordshire' },
-  { name: 'Greater London', slug: 'greater-london', description: 'Professional services across Greater London' }
-];
+// We'll use a React Hook to manage fetching and storing the counties data
+export const useCounties = () => {
+  const [counties, setCounties] = useState<County[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const getCountyBySlug = (slug: string): County | undefined => {
-  return counties.find(county => county.slug === slug);
+  useEffect(() => {
+    const loadCounties = async () => {
+      try {
+        setLoading(true);
+        const data = await apiFetchCounties();
+        setCounties(data);
+      } catch (err) {
+        setError('Failed to load counties. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCounties();
+  }, []); // The empty array means this effect runs only once when the component mounts
+
+  return { counties, loading, error };
 };
 
-export const getPrimaryCounties = (): County[] => {
-  return counties.filter(county => county.isPrimary);
+// Helper functions to get specific counties from the fetched list
+export const getCountyBySlug = (allCounties: County[], slug: string): County | undefined => {
+  return allCounties.find(county => county.slug === slug);
+};
+
+export const getPrimaryCounties = (allCounties: County[]): County[] => {
+  return allCounties.filter(county => county.isPrimary);
 };
