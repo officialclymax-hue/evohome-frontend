@@ -565,4 +565,114 @@ const ServiceDetailPage = () => {
 
       {/* FAQs */}
       <section className="py-20">
-        <div className="max-w-4
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {displayFaqs.map((faq, index) => (
+              <details key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                <summary className="w-full px-6 py-4 text-left font-semibold text-[#2B4C9B] hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer">
+                  <span>{faq.question}</span>
+                  <ArrowRight className="h-5 w-5 transform transition-transform group-open:rotate-90" />
+                </summary>
+                <div className="px-6 py-4 text-gray-700 border-t border-gray-200 bg-gray-50">
+                  <p>{faq.answer}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Coverage Areas */}
+      <section className="py-20 bg-[#f8fafc]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              {service.name} Services Across Southern England
+            </h2>
+            <p className="text-xl text-gray-600">
+              We connect you with trusted {service.name.toLowerCase()} specialists in your local area.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {primaryCounties.map((county) => (
+              <Link
+                key={county.slug}
+                to={`/${service.slug}/${county.slug}`}
+                className="flex items-center space-x-2 p-4 bg-white rounded-lg hover:bg-[#2B4C9B] hover:text-white transition-all duration-300 group shadow-md hover:shadow-lg border border-gray-200"
+              >
+                <MapPin className="h-4 w-4 text-[#2B4C9B] group-hover:text-white" />
+                <span className="font-medium">{county.name}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-gray-600 mb-4">
+              We also provide remote consultations nationwide.
+            </p>
+            <a
+              href="tel:03330040195"
+              className="inline-flex items-center space-x-2 text-[#2B4C9B] hover:text-[#1e3a7a] font-bold"
+            >
+              <Phone className="h-4 w-4" />
+              <span>Call 0333 004 0195 for other areas</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Quote Form */}
+      <section className="py-20 bg-gradient-to-br from-[#2B4C9B] to-[#1e3a7a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="text-white">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Ready for {service.name}?
+              </h2>
+              <p className="text-xl mb-8 opacity-95 leading-relaxed">
+                Get your free consultation and competitive quotes from vetted {service.name.toLowerCase()} specialists in your area.
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Users className="h-6 w-6 text-teal-200" />
+                  <span className="text-lg">Vetted, qualified specialists</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-6 w-6 text-teal-200" />
+                  <span className="text-lg">100% homeowner protection</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Award className="h-6 w-6 text-teal-200" />
+                  <span className="text-lg">Quality guaranteed installations</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Clock className="h-6 w-6 text-teal-200" />
+                  <span className="text-lg">24-hour response guarantee</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <ConversionQuoteForm
+                title={`Get Your Free ${service.name} Quote`}
+                subtitle="Connect with vetted specialists in your area"
+                servicePreselect={service.name}
+                variant="sidebar"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default ServiceDetailPage;
