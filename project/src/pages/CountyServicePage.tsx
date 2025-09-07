@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useServices, getServiceBySlug } from '../data/services'; // Import useServices and getServiceBySlug
-import { useCounties, getCountyBySlug } from '../data/counties'; // Import useCounties and getCountyBySlug
+import { useServices, getServiceBySlug, Service } from '../data/services';
+import { useCounties, getCountyBySlug, County } from '../data/counties';
 import { Helmet } from 'react-helmet-async';
 import {
   CheckCircle,
@@ -15,37 +15,31 @@ import {
 
 const CountyServicePage = () => {
   const { serviceSlug, countySlug } = useParams<{ serviceSlug: string; countySlug: string }>();
-
-  // Use the hooks to fetch all services and counties
   const { services, loading: servicesLoading, error: servicesError } = useServices();
   const { counties, loading: countiesLoading, error: countiesError } = useCounties();
 
-  // Find the specific service and county from the fetched data
-  const service = servicesLoading || servicesError ? undefined : getServiceBySlug(services, serviceSlug || '');
-  const county = countiesLoading || countiesError ? undefined : getCountyBySlug(counties, countySlug || '');
+  const service: Service | undefined = serviceSlug ? getServiceBySlug(services, serviceSlug) : undefined;
+  const county: County | undefined = countySlug ? getCountyBySlug(counties, countySlug) : undefined;
 
-  // Handle loading states
   if (servicesLoading || countiesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
-        <p className="text-xl text-gray-700">Loading service and county details...</p>
+        <p className="text-xl text-gray-700">Loading county service page...</p>
       </div>
     );
   }
 
-  // Handle error states
   if (servicesError || countiesError) {
     return (
       <div className="min-h-screen flex items-center justify-center mt-20">
-        <p className="text-xl text-red-600">Error loading data: {servicesError || countiesError}</p>
+        <p className="text-xl text-red-600">Error: {servicesError || countiesError}</p>
       </div>
     );
   }
 
-  // Handle service or county not found after loading
   if (!service || !county) {
     return (
-      <div className="min-h-screen flex items-center justify-center mt-20">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Not Found</h1>
           <Link to="/services" className="text-[#2B4C9B] hover:underline">
