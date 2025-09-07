@@ -859,11 +859,6 @@ export const services: Service[] = [
         name: 'Emergency Repairs',
         description: 'Urgent repairs when you need them most',
         features: ['24/7 availability', 'Rapid response', 'Emergency callouts', 'Immediate solutions']
-      },
-      {
-        name: 'Seasonal Services',
-        description: 'Prepare your home for changing seasons',
-        features: ['Gutter cleaning', 'Boiler servicing', 'Garden maintenance', 'Weather preparation']
       }
     ],
     whyChooseContent: 'Regular maintenance prevents small issues becoming expensive problems. Our trusted professionals keep your home in perfect condition year-round.',
