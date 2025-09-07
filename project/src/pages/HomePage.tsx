@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
 import PremiumHero from '../components/PremiumHero';
 import MultiStepQuoteForm from '../components/MultiStepQuoteForm';
-import { 
-  Shield, 
-  Users, 
-  CheckCircle, 
+import { useServices, getFeaturedServices } from '../data/services'; // Import useServices and getFeaturedServices
+import { useCounties } from '../data/counties'; // Import useCounties
+import {
+  Shield,
+  Users,
+  CheckCircle,
   Star,
   Award,
   ArrowRight,
@@ -34,6 +36,53 @@ import {
 } from 'lucide-react';
 
 const HomePage = () => {
+  // Fetch services and counties using the new hooks
+  const { services, loading: servicesLoading, error: servicesError } = useServices();
+  const { counties, loading: countiesLoading, error: countiesError } = useCounties();
+
+  // Get featured services from the fetched data
+  const featuredServices = servicesLoading || servicesError ? [] : getFeaturedServices(services);
+
+  // Hardcoded testimonials (these are not dynamic from backend yet)
+  const realTestimonials = [
+    {
+      name: 'Dean Butler',
+      date: '2025-04-09',
+      rating: 5,
+      text: 'Excellent service very professional. So impressed I recommend EvoHome to my cousin, he was happy with the job they done. Great communication throughout the process.',
+      service: 'Solar Installation',
+      verified: true,
+      location: 'Hampshire'
+    },
+    {
+      name: 'Michelle Comrie (MJ)',
+      date: '2025-01-16',
+      rating: 5,
+      text: 'I was unfortunate to have a wall vent incorrectly fitted causing a leak. EvoHome sorted it quickly and professionally with no fuss. Excellent customer service.',
+      service: 'Roofing Repair',
+      verified: true,
+      location: 'Surrey'
+    },
+    {
+      name: 'Jamie Walsh',
+      date: '2024-10-08',
+      rating: 5,
+      text: 'I\'m a retrofit assessor and recommend EvoHome Improvements highly. This type of service is much needed in the UK home improvement industry.',
+      service: 'Heat Pump Assessment',
+      verified: true,
+      location: 'Sussex'
+    },
+    {
+      name: 'Tyler Heath',
+      date: '2024-10-03',
+      rating: 5,
+      text: 'This is excellent, all I have to do is focus on the standard of work, all of the marketing, sales, customer service and payments EvoHome handles.',
+      service: 'Trade Partner',
+      verified: true,
+      location: 'Dorset'
+    }
+  ];
+
   const whyChooseEvoHome = [
     {
       icon: Eye,
@@ -70,129 +119,6 @@ const HomePage = () => {
       title: 'Trusted Products & Solutions',
       description: 'We work with proven product providers who meet strict standards for quality and performance. Only reliable, long-lasting solutions.',
       highlight: 'Quality guaranteed'
-    }
-  ];
-
-  const realTestimonials = [
-    {
-      name: 'Dean Butler',
-      date: '2025-04-09',
-      rating: 5,
-      text: 'Excellent service very professional. So impressed I recommend EvoHome to my cousin, he was happy with the job they done. Great communication throughout the process.',
-      service: 'Solar Installation',
-      verified: true,
-      location: 'Hampshire'
-    },
-    {
-      name: 'Michelle Comrie (MJ)',
-      date: '2025-01-16', 
-      rating: 5,
-      text: 'I was unfortunate to have a wall vent incorrectly fitted causing a leak. EvoHome sorted it quickly and professionally with no fuss. Excellent customer service.',
-      service: 'Roofing Repair',
-      verified: true,
-      location: 'Surrey'
-    },
-    {
-      name: 'Jamie Walsh',
-      date: '2024-10-08',
-      rating: 5,
-      text: 'I\'m a retrofit assessor and recommend EvoHome Improvements highly. This type of service is much needed in the UK home improvement industry.',
-      service: 'Heat Pump Assessment',
-      verified: true,
-      location: 'Sussex'
-    },
-    {
-      name: 'Tyler Heath',
-      date: '2024-10-03',
-      rating: 5,
-      text: 'This is excellent, all I have to do is focus on the standard of work, all of the marketing, sales, customer service and payments EvoHome handles.',
-      service: 'Trade Partner',
-      verified: true,
-      location: 'Dorset'
-    }
-  ];
-
-  const services = [
-    {
-      id: 'solar-assisted-heat-pump',
-      name: 'SOLAR ASSISTED HEAT PUMP',
-      description: 'A Solar Assisted Heat Pump (SAHP) efficiently heats water day and night using solar energy and heat pump technology.',
-      image: 'https://images.pexels.com/photos/9875419/pexels-photo-9875419.jpeg',
-      slug: 'solar-assisted-heat-pump',
-      savings: '£800/year',
-      grant: 'BUS Grant Available'
-    },
-    {
-      id: 'air-source-heat-pump',
-      name: 'AIR SOURCE HEAT PUMP',
-      description: 'An Air Source Heat Pump (ASHP) extracts heat from the air to provide efficient heating and hot water.',
-      image: 'https://images.pexels.com/photos/9875419/pexels-photo-9875419.jpeg',
-      slug: 'air-source-heat-pump',
-      savings: '£1,500/year',
-      grant: 'Up to £7,500 grant'
-    },
-    {
-      id: 'solar-power',
-      name: 'SOLAR POWER',
-      description: 'Generate clean electricity and reduce your energy bills with professional solar panel installation.',
-      image: 'https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg',
-      slug: 'solar-power',
-      savings: '£1,200/year',
-      grant: 'Smart Export Guarantee'
-    },
-    {
-      id: 'windows',
-      name: 'WINDOWS',
-      description: 'We provide expert guidance on all window styles, materials, and suppliers, ensuring the best deals.',
-      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg',
-      slug: 'windows-doors',
-      savings: '£600/year',
-      grant: 'Energy efficiency'
-    },
-    {
-      id: 'driveways',
-      name: 'DRIVEWAYS',
-      description: 'Attractive driveways enhance curb appeal, improve parking, and increase property value.',
-      image: 'https://images.pexels.com/photos/1396134/pexels-photo-1396134.jpeg',
-      slug: 'driveways',
-      savings: 'Adds £15k+ value',
-      grant: 'Quick installation'
-    },
-    {
-      id: 'insulation',
-      name: 'INSULATION',
-      description: 'We help you find the best insulation solutions for your home, reducing heat loss & lowering energy bills.',
-      image: 'https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg',
-      slug: 'insulation',
-      savings: '£500/year',
-      grant: 'Quick payback'
-    },
-    {
-      id: 'roofline',
-      name: 'ROOFLINE',
-      description: 'Roofline upgrades combine durable materials with expert fitting for a smart, long-lasting finish.',
-      image: 'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg',
-      slug: 'roofing',
-      savings: 'Maintenance-free',
-      grant: '15-year warranty'
-    },
-    {
-      id: 'kitchens',
-      name: 'KITCHENS',
-      description: 'Transform your kitchen into the heart of your home with bespoke design and professional installation.',
-      image: 'https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg',
-      slug: 'kitchens',
-      savings: 'Adds £25k+ value',
-      grant: 'Full design service'
-    },
-    {
-      id: 'bathrooms',
-      name: 'BATHROOMS',
-      description: 'Create a luxury bathroom with modern fixtures and professional installation.',
-      image: 'https://images.pexels.com/photos/1454804/pexels-photo-1454804.jpeg',
-      slug: 'bathrooms',
-      savings: 'Adds £20k+ value',
-      grant: 'Complete renovation'
     }
   ];
 
@@ -275,13 +201,30 @@ const HomePage = () => {
     }
   ];
 
+  // Handle loading and error states for services and counties
+  if (servicesLoading || countiesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center mt-20">
+        <p className="text-xl text-gray-700">Loading homepage content...</p>
+      </div>
+    );
+  }
+
+  if (servicesError || countiesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center mt-20">
+        <p className="text-xl text-red-600">Error loading content: {servicesError || countiesError}</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <Helmet>
         <title>EvoHome Improvements - The Smarter Way to Improve Your Home</title>
         <meta name="description" content="Home Improvement in Hampshire and Surrounding Area. Professional home improvements with 100% homeowner protection. Free quotes from vetted specialists." />
         <meta name="keywords" content="home improvements, Hampshire, Surrey, Sussex, Dorset, Wiltshire, solar power, heat pumps, windows, roofing" />
-        
+
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -311,7 +254,7 @@ const HomePage = () => {
             "areaServed": ["Hampshire", "Surrey", "Sussex", "Dorset", "Wiltshire"],
             "serviceType": [
               "Solar Power Installation",
-              "Air Source Heat Pump Installation", 
+              "Air Source Heat Pump Installation",
               "Ground Source Heat Pump Installation",
               "Window Installation",
               "Door Installation",
@@ -338,7 +281,7 @@ const HomePage = () => {
                   }
                 },
                 {
-                  "@type": "Offer", 
+                  "@type": "Offer",
                   "itemOffered": {
                     "@type": "Service",
                     "name": "Heat Pump Installation"
@@ -464,9 +407,9 @@ const HomePage = () => {
               From renewable energy to home improvements across Hampshire & surrounding areas.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {services.map((service) => (
+            {featuredServices.map((service) => (
               <div key={service.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group">
                 <div className="relative overflow-hidden">
                   <img
@@ -474,22 +417,18 @@ const HomePage = () => {
                     alt={service.name}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 right-4 bg-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    {service.grant}
-                  </div>
+                  {service.averageSavings && (
+                    <div className="absolute top-4 right-4 bg-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      Saves {service.averageSavings}
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-[#2B4C9B] mb-3 group-hover:text-[#1e3a7a] transition-colors">
                     {service.name}
                   </h3>
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">{service.description}</p>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                      Saves {service.savings}
-                    </span>
-                  </div>
-                  
+
                   <Link
                     to={`/services/${service.slug}`}
                     className="inline-flex items-center space-x-2 text-[#2B4C9B] hover:text-[#1e3a7a] font-bold text-sm group-hover:translate-x-1 transition-all duration-300"
@@ -501,7 +440,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="text-center">
             <Link
               to="/services"
@@ -533,7 +472,7 @@ const HomePage = () => {
               />
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {processSteps.map((step, index) => {
               const IconComponent = step.icon;
@@ -570,7 +509,7 @@ const HomePage = () => {
               No directories. No spam. Just reliable results.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {whyChooseEvoHome.map((benefit, index) => {
               const IconComponent = benefit.icon;
@@ -611,7 +550,7 @@ const HomePage = () => {
               At EvoHome, we help homeowners across Hampshire and surrounding areas take care of their homes with confidence. Whether you're upgrading, maintaining, or enhancing your living space, EvoHome offers trusted services and carefully selected products you can rely on.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {evoHomeServices.map((service, index) => {
               const IconComponent = service.icon;
@@ -662,12 +601,12 @@ const HomePage = () => {
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-6 w-6 text-teal-500 fill-current" />
                 ))}
-              </div> 
+              </div>
               <span className="text-2xl font-bold text-gray-900">4.9/5</span>
               <span className="text-gray-600">from Google Reviews</span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {realTestimonials.map((testimonial, index) => (
               <div key={index} className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 group">
@@ -734,7 +673,7 @@ const HomePage = () => {
               Quality workmanship from our vetted specialist network.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
               { image: 'https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg', title: 'Solar Installation', location: 'Hampshire', type: 'Renewable Energy' },
@@ -762,7 +701,7 @@ const HomePage = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="text-center">
             <Link
               to="/gallery"
@@ -819,7 +758,7 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="text-center">
               <div className="w-24 h-24 bg-gradient-to-br from-[#2B4C9B] to-[#1e3a7a] text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
                 <MessageCircle className="h-12 w-12" />
@@ -828,7 +767,7 @@ const HomePage = () => {
               <p className="text-lg text-gray-600 mb-6">
                 Email us your questions or project details for expert advice.
               </p>
-              <a 
+              <a
                 href="mailto:office@evohomeimprovements.co.uk"
                 className="text-2xl font-bold text-[#2B4C9B] hover:text-[#1e3a7a] transition-colors break-all"
               >
