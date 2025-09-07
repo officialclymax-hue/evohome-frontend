@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { services } from '../data/services';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
+import { useServices } from '../data/services'; // Import the new hook
+import {
+  Phone,
+  Mail,
+  MapPin,
   Clock,
   MessageCircle,
   CheckCircle
 } from 'lucide-react';
 
 const ContactPage = () => {
+  const { services, loading, error } = useServices(); // Use the hook to get services
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,7 +49,7 @@ const ContactPage = () => {
         <Helmet>
           <title>Message Sent - EvoHome Improvements</title>
         </Helmet>
-        
+
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
             <div className="flex items-center justify-center w-16 h-16 bg-teal-100 rounded-full mx-auto mb-6">
@@ -79,7 +81,7 @@ const ContactPage = () => {
         <meta name="description" content="Contact EvoHome Improvements for free home improvement advice. Call 0333 004 0195, email office@evohomeimprovements.co.uk or use our contact form for free quotes across Hampshire, Surrey, Sussex." />
         <meta name="keywords" content="contact evohome, home improvement quotes, Hampshire, Surrey, Sussex, Dorset, Wiltshire, free consultation, 0333 004 0195" />
         <link rel="canonical" href="https://evohomeimprovements.co.uk/contact" />
-        
+
         {/* JSON-LD Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
@@ -120,7 +122,7 @@ const ContactPage = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-8">
                 Get In Touch
               </h2>
-              
+
               <div className="space-y-6 mb-8">
                 <div className="flex items-start space-x-4">
                   <div className="flex items-center justify-center w-12 h-12 bg-[#2B4C9B] text-white rounded-lg flex-shrink-0">
@@ -154,9 +156,9 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">WhatsApp</h3>
-                    <a 
-                      href="https://wa.me/447895545248" 
-                      target="_blank" 
+                    <a
+                      href="https://wa.me/447895545248"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#2B4C9B] hover:text-[#1e3a7a] font-medium"
                     >
@@ -210,10 +212,10 @@ const ContactPage = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Send Us a Message
                 </h2>
-                
-                <form 
-                  action="https://formsubmit.co/office@evohomeimprovements.co.uk" 
-                  method="POST" 
+
+                <form
+                  action="https://formsubmit.co/office@evohomeimprovements.co.uk"
+                  method="POST"
                   className="space-y-6"
                   onSubmit={handleSubmit}
                 >
@@ -239,7 +241,7 @@ const ContactPage = () => {
                         placeholder="Enter your full name"
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                         Email Address *
@@ -273,7 +275,7 @@ const ContactPage = () => {
                         placeholder="Enter your phone number"
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
                         Postcode *
@@ -301,9 +303,13 @@ const ContactPage = () => {
                       value={formData.service}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2B4C9B] focus:border-transparent"
+                      disabled={loading} // Disable while loading services
                     >
-                      <option value="">Select a service (optional)</option>
-                      {services.map((service) => (
+                      <option value="">
+                        {loading ? 'Loading services...' : 'Select a service (optional)'}
+                      </option>
+                      {error && <option value="" disabled>Error loading services</option>}
+                      {!loading && !error && services.map((service) => (
                         <option key={service.id} value={service.name}>
                           {service.name}
                         </option>
