@@ -1,12 +1,12 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getServiceBySlug, Service } from '../data/services';
-import { getCountyBySlug, County } from '../data/counties';
+import { useServices, getServiceBySlug } from '../data/services'; // Import useServices and getServiceBySlug
+import { useCounties, getCountyBySlug } from '../data/counties'; // Import useCounties and getCountyBySlug
 import { Helmet } from 'react-helmet-async';
-import { 
-  CheckCircle, 
-  Phone, 
-  MapPin, 
+import {
+  CheckCircle,
+  Phone,
+  MapPin,
   Star,
   Shield,
   Users,
@@ -15,12 +15,37 @@ import {
 
 const CountyServicePage = () => {
   const { serviceSlug, countySlug } = useParams<{ serviceSlug: string; countySlug: string }>();
-  const service: Service | undefined = serviceSlug ? getServiceBySlug(serviceSlug) : undefined;
-  const county: County | undefined = countySlug ? getCountyBySlug(countySlug) : undefined;
 
+  // Use the hooks to fetch all services and counties
+  const { services, loading: servicesLoading, error: servicesError } = useServices();
+  const { counties, loading: countiesLoading, error: countiesError } = useCounties();
+
+  // Find the specific service and county from the fetched data
+  const service = servicesLoading || servicesError ? undefined : getServiceBySlug(services, serviceSlug || '');
+  const county = countiesLoading || countiesError ? undefined : getCountyBySlug(counties, countySlug || '');
+
+  // Handle loading states
+  if (servicesLoading || countiesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center mt-20">
+        <p className="text-xl text-gray-700">Loading service and county details...</p>
+      </div>
+    );
+  }
+
+  // Handle error states
+  if (servicesError || countiesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center mt-20">
+        <p className="text-xl text-red-600">Error loading data: {servicesError || countiesError}</p>
+      </div>
+    );
+  }
+
+  // Handle service or county not found after loading
   if (!service || !county) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center mt-20">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Not Found</h1>
           <Link to="/services" className="text-[#2B4C9B] hover:underline">
@@ -55,7 +80,7 @@ const CountyServicePage = () => {
         <meta name="description" content={`Professional ${service.name.toLowerCase()} services in ${county.name}. Get free quotes from vetted specialists. 100% homeowner protection. Call 0333 004 0195.`} />
         <meta name="keywords" content={`${service.name.toLowerCase()}, ${county.name}, installation, free quotes, vetted specialists, home improvements`} />
         <link rel="canonical" href={`https://evohomeimprovements.co.uk/${service.slug}/${county.slug}`} />
-        
+
         {/* JSON-LD Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
@@ -148,7 +173,7 @@ const CountyServicePage = () => {
               Trusted by {county.name} Homeowners
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="flex items-center justify-center w-16 h-16 bg-[#2B4C9B] text-white rounded-full mx-auto mb-4">
@@ -157,7 +182,7 @@ const CountyServicePage = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">100% Protected</h3>
               <p className="text-gray-600">Full homeowner protection on every {county.name} project</p>
             </div>
-            
+
             <div className="text-center">
               <div className="flex items-center justify-center w-16 h-16 bg-[#2B4C9B] text-white rounded-full mx-auto mb-4">
                 <Users className="h-8 w-8" />
@@ -165,7 +190,7 @@ const CountyServicePage = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Local Experts</h3>
               <p className="text-gray-600">Vetted {service.name.toLowerCase()} specialists serving {county.name}</p>
             </div>
-            
+
             <div className="text-center">
               <div className="flex items-center justify-center w-16 h-16 bg-[#2B4C9B] text-white rounded-full mx-auto mb-4">
                 <Award className="h-8 w-8" />
@@ -188,7 +213,7 @@ const CountyServicePage = () => {
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
                 Our {service.name.toLowerCase()} specialists in {county.name} are carefully vetted to ensure they meet our high standards for quality, reliability, and customer service. Whether you're in a rural area or town center of {county.name}, we connect you with local experts who understand your specific needs.
               </p>
-              
+
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 What's Included:
               </h3>
@@ -209,7 +234,7 @@ const CountyServicePage = () => {
               <p className="text-gray-600 mb-6">
                 Ready to start your {service.name.toLowerCase()} project in {county.name}? Get up to 5 free quotes from vetted local specialists.
               </p>
-              
+
               <div className="space-y-4">
                 <Link
                   to="/request-quote"
@@ -217,7 +242,7 @@ const CountyServicePage = () => {
                 >
                   Request Free Quote
                 </Link>
-                
+
                 <a
                   href="tel:03330040195"
                   className="flex items-center justify-center space-x-2 w-full px-6 py-4 border-2 border-[#2B4C9B] text-[#2B4C9B] font-bold rounded-lg hover:bg-[#2B4C9B] hover:text-white transition-colors"
